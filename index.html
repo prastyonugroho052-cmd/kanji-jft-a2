@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Kanji JFT-Basic A2 - A2PRAS V1.0</title>
+    <!-- Tailwind CSS for crisp modern utility styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-sub: #4B5563;
+            --green: #10B981;
+            --yellow: #F59E0B;
+            --red: #EF4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            position: relative;
+        }
+
+        /* Watermark Branding */
+        .watermark {
+            position: fixed;
+            bottom: 12px;
+            right: 15px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            pointer-events: none;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 620px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: auto;
+            position: relative;
+        }
+
+        /* Top Bar Navigation */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #F3F4F6;
+            padding-bottom: 14px;
+        }
+
+        .btn-lobby {
+            background-color: #EEF2FF;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-lobby:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .timer-badge {
+            font-weight: 700;
+            color: var(--red);
+            font-size: 14px;
+            background: #FEE2E2;
+            padding: 4px 12px;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Lobby Screen Layout */
+        .lobby-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            text-align: center;
+        }
+
+        .lobby-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .lobby-subtitle {
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.4;
+        }
+
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .mode-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn-mode {
+            background: white;
+            border: 2px solid #E5E7EB;
+            padding: 18px 14px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-mode:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(79, 70, 229, 0.12);
+        }
+
+        .btn-mode span.icon {
+            font-size: 30px;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.55);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            animation: modalIn 0.2s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-option {
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            background: white;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .btn-option:hover, .btn-option.selected {
+            border-color: var(--primary);
+            background: #EEF2FF;
+            color: var(--primary);
+        }
+
+        /* 3D Flashcard Layout */
+        .card-container {
+            perspective: 1000px;
+            height: 260px;
+            width: 100%;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            border: 2px solid #E5E7EB;
+        }
+
+        .card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 18px;
+            padding: 20px;
+            background: var(--card-bg);
+            text-align: center;
+        }
+
+        .card-front .kanji { font-size: 68px; font-weight: 800; color: #111827; line-height: 1.1; }
+        .card-front .hint { margin-top: 15px; font-size: 13px; color: #9CA3AF; font-weight: 500; }
+
+        .card-back { transform: rotateY(180deg); gap: 8px; }
+        .card-back .kanji-small { font-size: 28px; color: var(--primary); font-weight: 800; }
+        .card-back .reading { font-size: 24px; font-weight: 700; color: #111827; }
+        .card-back .meaning { font-size: 17px; font-weight: 600; color: var(--green); }
+        .card-back .topic { font-size: 12px; color: var(--text-sub); background: #EEF2FF; padding: 4px 12px; border-radius: 12px; font-weight: 500; }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .btn-status {
+            padding: 12px 6px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-status:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-remembered { background-color: var(--green); }
+        .btn-doubtful { background-color: var(--yellow); }
+        .btn-forgotten { background-color: var(--red); }
+        .btn-status:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+        /* Multiple Choice Layout */
+        .mcq-question {
+            font-size: 58px;
+            font-weight: 800;
+            text-align: center;
+            padding: 24px 16px;
+            background: #F9FAFB;
+            border-radius: 16px;
+            border: 2px solid #E5E7EB;
+            color: #111827;
+            line-height: 1.1;
+        }
+
+        .mcq-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-mcq-opt {
+            padding: 14px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 14px;
+            background: white;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-mcq-opt:hover {
+            border-color: var(--primary);
+            background: #EEF2FF;
+        }
+
+        .btn-mcq-opt.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .opt-label {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #E5E7EB;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .btn-mcq-opt.selected .opt-label {
+            background: white;
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .btn-nav {
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid #D1D5DB;
+            background: white;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: #F3F4F6;
+        }
+
+        .btn-nav:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Progress Bar */
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background-color: #E5E7EB;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Result View */
+        .result-view {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .stat-card {
+            padding: 14px 10px;
+            border-radius: 14px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .stat-card .num { font-size: 24px; font-weight: 800; }
+        .stat-card .label { font-size: 11px; font-weight: 600; opacity: 0.95; }
+
+        .eval-list {
+            max-height: 290px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px solid #E5E7EB;
+            padding: 12px;
+            border-radius: 14px;
+            background: #FAFAFA;
+        }
+
+        .eval-item {
+            padding: 12px;
+            border-radius: 10px;
+            background: white;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .eval-item.correct { border-left: 4px solid var(--green); }
+        .eval-item.wrong { border-left: 4px solid var(--red); }
+
+        .eval-kanji { font-size: 20px; font-weight: 800; color: var(--primary); }
+
+        .footer-note {
+            font-size: 11px;
+            color: #9CA3AF;
+            text-align: center;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Watermark Branding -->
+<div class="watermark">A2PRAS V1.0</div>
+
+<div class="app-container">
+    <!-- Top Nav Header (Visible outside lobby) -->
+    <div id="top-nav" class="top-nav" style="display: none;">
+        <button class="btn-lobby" onclick="goToLobby()">🏠 Lobby</button>
+        <span id="session-info" style="font-size: 13px; font-weight: 700; color: var(--text-sub);">Soal 1/40</span>
+        <span id="timer-display" class="timer-badge" style="display: none;">⏱️ 00:00</span>
+    </div>
+
+    <!-- 1. Lobby Screen -->
+    <div id="lobby-screen" class="lobby-screen">
+        <div>
+            <div class="lobby-title">⛩️ Kanji Flashcard A2</div>
+            <div class="lobby-subtitle mt-1">Pilih mode latihan untuk menghafal 494 Kanji Marugoto</div>
+        </div>
+
+        <div class="mode-grid">
+            <button class="btn-mode" onclick="openConfigModal('fc_relaxed')">
+                <span class="icon">🃏</span>
+                <span>Flashcard (Santai)</span>
+            </button>
+            <button class="btn-mode" onclick="openConfigModal('mcq_relaxed')">
+                <span class="icon">📝</span>
+                <span>Pilihan Ganda (Santai)</span>
+            </button>
+            <button class="btn-mode" onclick="openConfigModal('fc_timed')">
+                <span class="icon">⏱️</span>
+                <span>Flashcard (Berwaktu)</span>
+            </button>
+            <button class="btn-mode" onclick="openConfigModal('mcq_timed')">
+                <span class="icon">⚡</span>
+                <span>Pilihan Ganda (Berwaktu)</span>
+            </button>
+        </div>
+        <div class="footer-note">A2PRAS V1.0 • Japanese Learning Hub</div>
+    </div>
+
+    <!-- Configuration Modal -->
+    <div id="config-modal" class="modal-overlay">
+        <div class="modal">
+            <h3 id="modal-title" style="text-align: center; font-size: 18px; font-weight: 800; color: var(--primary);">Pengaturan Sesi Latihan</h3>
+
+            <!-- MCQ Type Selection -->
+            <div id="mcq-type-section" style="display: none;">
+                <label style="font-size: 13px; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 6px;">Tipe Jawaban Pilihan Ganda:</label>
+                <div class="option-grid">
+                    <button id="opt-type-reading" class="btn-option selected" onclick="selectMCQType('reading')">Cara Baca (Hiragana)</button>
+                    <button id="opt-type-meaning" class="btn-option" onclick="selectMCQType('meaning')">Arti (Bahasa Indonesia)</button>
+                </div>
+            </div>
+
+            <!-- Question Count Selection -->
+            <div>
+                <label style="font-size: 13px; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 6px;">Pilih Jumlah Soal:</label>
+                <div class="option-grid">
+                    <button class="btn-option opt-count" onclick="selectCount(25, this)">25 Soal <small id="time-25"></small></button>
+                    <button class="btn-option opt-count selected" onclick="selectCount(40, this)">40 Soal <small id="time-40"></small></button>
+                    <button class="btn-option opt-count" onclick="selectCount(65, this)">65 Soal <small id="time-65"></small></button>
+                    <button class="btn-option opt-count" onclick="selectCount(80, this)">80 Soal <small id="time-80"></small></button>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn-nav" style="flex: 1;" onclick="closeConfigModal()">Batal</button>
+                <button class="btn-mode" style="flex: 2; background: var(--primary); color: white; border: none; padding: 12px;" onclick="startConfiguredSession()">Mulai Sesi 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Flashcard Screen -->
+    <div id="flashcard-screen" style="display: none; flex-direction: column; gap: 16px;">
+        <div class="progress-bar-bg">
+            <div id="fc-progress-fill" class="progress-bar-fill"></div>
+        </div>
+
+        <div class="card-container" onclick="flipCard()">
+            <div id="card" class="card">
+                <div class="card-face card-front">
+                    <div id="fc-kanji" class="kanji">魚</div>
+                    <div class="hint">💡 Klik / Tekan Spasi untuk melihat jawaban</div>
+                </div>
+                <div class="card-face card-back">
+                    <div id="fc-kanji-back" class="kanji-small">魚</div>
+                    <div id="fc-reading" class="reading">さかな</div>
+                    <div id="fc-meaning" class="meaning">Ikan</div>
+                    <div id="fc-topic" class="topic">トピック 3 たべもの</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button id="btn-red" class="btn-status btn-forgotten" onclick="rateFlashcard('forgotten')">
+                <span>❌</span>
+                <span>Belum Ingat</span>
+            </button>
+            <button id="btn-yellow" class="btn-status btn-doubtful" onclick="rateFlashcard('doubtful')">
+                <span>🤔</span>
+                <span>Ragu-ragu</span>
+            </button>
+            <button id="btn-green" class="btn-status btn-remembered" onclick="rateFlashcard('remembered')">
+                <span>✅</span>
+                <span>Sudah Ingat</span>
+            </button>
+        </div>
+        <div class="footer-note">Gunakan keyboard: [Spasi] Balik kartu | [1] Lupa [2] Ragu [3] Ingat</div>
+    </div>
+
+    <!-- 3. Multiple Choice Screen -->
+    <div id="mcq-screen" style="display: none; flex-direction: column; gap: 16px;">
+        <div class="progress-bar-bg">
+            <div id="mcq-progress-fill" class="progress-bar-fill"></div>
+        </div>
+
+        <div id="mcq-kanji" class="mcq-question">魚</div>
+
+        <div class="mcq-options">
+            <button class="btn-mcq-opt" onclick="selectMCQOption(0)"><span class="opt-label">A</span><span id="opt-text-0">option</span></button>
+            <button class="btn-mcq-opt" onclick="selectMCQOption(1)"><span class="opt-label">B</span><span id="opt-text-1">option</span></button>
+            <button class="btn-mcq-opt" onclick="selectMCQOption(2)"><span class="opt-label">C</span><span id="opt-text-2">option</span></button>
+            <button class="btn-mcq-opt" onclick="selectMCQOption(3)"><span class="opt-label">D</span><span id="opt-text-3">option</span></button>
+        </div>
+
+        <div class="nav-actions">
+            <button id="btn-prev-mcq" class="btn-nav" onclick="prevMCQQuestion()">← Sebelumnya</button>
+            <button id="btn-next-mcq" class="btn-nav" style="background: var(--primary); color: white;" onclick="nextMCQQuestion()">Lanjut →</button>
+        </div>
+        <div class="footer-note">Shortcut keyboard: [A, B, C, D] Pilih | [← / →] Pindah Soal</div>
+    </div>
+
+    <!-- 4. Result Screen -->
+    <div id="result-screen" class="result-view" style="display: none;">
+        <h2 style="text-align: center; font-size: 22px; font-weight: 800; color: var(--primary);">🎉 Sesi Selesai!</h2>
+        <p style="text-align: center; color: var(--text-sub); font-size: 13px;" id="result-summary">Berikut rekapitulasi hasil jawaban kamu:</p>
+
+        <div class="stat-grid">
+            <div class="stat-card" style="background-color: var(--green);">
+                <div id="count-correct" class="num">0</div>
+                <div class="label" id="label-stat-1">Benar / Ingat</div>
+            </div>
+            <div class="stat-card" style="background-color: var(--yellow);">
+                <div id="count-doubt" class="num">0</div>
+                <div class="label" id="label-stat-2">Ragu-ragu</div>
+            </div>
+            <div class="stat-card" style="background-color: var(--red);">
+                <div id="count-wrong" class="num">0</div>
+                <div class="label" id="label-stat-3">Salah / Lupa</div>
+            </div>
+        </div>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-main); margin-top: 4px;">Pembahasan & Kunci Jawaban Lengkap:</h4>
+        <div id="eval-list" class="eval-list">
+            <!-- Dynamic Evaluation Items -->
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 5px;">
+            <button class="btn-nav" style="flex: 1;" onclick="goToLobby()">🏠 Lobby Utama</button>
+            <button class="btn-mode" style="flex: 1; background: var(--primary); color: white; border: none; padding: 12px;" onclick="startConfiguredSession()">Main Lagi 🔄</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Database Kanji Marugoto A1 - A2/B1 Complete List (1 - 494)
+const rawKanjiData = [
+    { id: 1, kanji: "魚", reading: "さかな", meaning: "Ikan", topic: "トピック 3 たべもの" },
+    { id: 2, kanji: "肉", reading: "にく", meaning: "Daging", topic: "トピック 3 たべもの" },
+    { id: 3, kanji: "卵", reading: "たまご", meaning: "Telur", topic: "トピック 3 たべもの" },
+    { id: 4, kanji: "水", reading: "みず", meaning: "Air", topic: "トピック 3 たべもの" },
+    { id: 5, kanji: "食べます", reading: "たべます", meaning: "Makan", topic: "トピック 3 たべもの" },
+    { id: 6, kanji: "飲みます", reading: "のみます", meaning: "Minum", topic: "トピック 3 たべもの" },
+    { id: 7, kanji: "大きい", reading: "おおきい", meaning: "Besar", topic: "トピック 4 いえ" },
+    { id: 8, kanji: "小さい", reading: "ちいさい", meaning: "Kecil", topic: "トピック 4 いえ" },
+    { id: 9, kanji: "新しい", reading: "あたらしい", meaning: "Baru", topic: "トピック 4 いえ" },
+    { id: 10, kanji: "古い", reading: "ふるい", meaning: "Lama / Tua (benda)", topic: "トピック 4 いえ" },
+    { id: 11, kanji: "～時", reading: "～じ", meaning: "Jam ~", topic: "トピック 5 せいかつ" },
+    { id: 12, kanji: "～分", reading: "～ふん／ぷん", meaning: "Menit ~", topic: "トピック 5 せいかつ" },
+    { id: 13, kanji: "～半", reading: "～はん", meaning: "Setengah (~ jam)", topic: "トピック 5 せいかつ" },
+    { id: 14, kanji: "月", reading: "げつ", meaning: "Senin / Bulan", topic: "トピック 5 せいかつ" },
+    { id: 15, kanji: "火", reading: "か", meaning: "Selasa / Api", topic: "トピック 5 せいかつ" },
+    { id: 16, kanji: "水", reading: "すい", meaning: "Rabu / Air", topic: "トピック 5 せいかつ" },
+    { id: 17, kanji: "木", reading: "もく", meaning: "Kamis / Pohon", topic: "トピック 5 せいかつ" },
+    { id: 18, kanji: "金", reading: "きん", meaning: "Jumat / Emas", topic: "トピック 5 せいかつ" },
+    { id: 19, kanji: "土", reading: "ど", meaning: "Sabtu / Tanah", topic: "トピック 5 せいかつ" },
+    { id: 20, kanji: "日", reading: "にち", meaning: "Minggu / Hari", topic: "トピック 5 せいかつ" },
+    { id: 21, kanji: "～よう日", reading: "～ようび", meaning: "Hari ~", topic: "トピック 5 せいかつ" },
+    { id: 22, kanji: "言います", reading: "いいます", meaning: "Bicara / Berkata", topic: "トピック 6 やすみのひ 1" },
+    { id: 23, kanji: "話します", reading: "はなします", meaning: "Berbicara", topic: "トピック 6 やすみのひ 1" },
+    { id: 24, kanji: "読みます", reading: "よみます", meaning: "Membaca", topic: "トピック 6 やすみのひ 1" },
+    { id: 25, kanji: "見ます", reading: "みます", meaning: "Melihat / Menonton", topic: "トピック 6 やすみのひ 1" },
+    { id: 26, kanji: "聞きます", reading: "ききます", meaning: "Mendengar / Bertanya", topic: "トピック 6 やすみのひ 1" },
+    { id: 27, kanji: "書きます", reading: "かきます", meaning: "Menulis", topic: "トピック 6 やすみのひ 1" },
+    { id: 28, kanji: "一", reading: "いち", meaning: "Satu", topic: "トピック 6 やすみのひ 1" },
+    { id: 29, kanji: "二", reading: "に", meaning: "Dua", topic: "トピック 6 やすみのひ 1" },
+    { id: 30, kanji: "三", reading: "さん", meaning: "Tiga", topic: "トピック 6 やすみのひ 1" },
+    { id: 31, kanji: "四", reading: "よん／し", meaning: "Empat", topic: "トピック 6 やすみのひ 1" },
+    { id: 32, kanji: "五", reading: "ご", meaning: "Lima", topic: "トピック 6 やすみのひ 1" },
+    { id: 33, kanji: "六", reading: "ろく", meaning: "Enam", topic: "トピック 6 やすみのひ 1" },
+    { id: 34, kanji: "七", reading: "なな／しち", meaning: "Tujuh", topic: "トピック 6 やすみのひ 1" },
+    { id: 35, kanji: "八", reading: "はち", meaning: "Delapan", topic: "トピック 6 やすみのひ 1" },
+    { id: 36, kanji: "九", reading: "きゅう／く", meaning: "Sembilan", topic: "トピック 6 やすみのひ 1" },
+    { id: 37, kanji: "十", reading: "じゅう", meaning: "Sepuluh", topic: "トピック 6 やすみのひ 1" },
+    { id: 38, kanji: "～年", reading: "～ねん", meaning: "Tahun ~", topic: "トピック 6 やすみのひ 1" },
+    { id: 39, kanji: "～月", reading: "～がつ", meaning: "Bulan ~", topic: "トピック 6 やすみのひ 1" },
+    { id: 40, kanji: "～日", reading: "～にち", meaning: "Tanggal ~", topic: "トピック 6 やすみのひ 1" },
+    { id: 41, kanji: "東", reading: "ひがし", meaning: "Timur", topic: "トピック 7 まち" },
+    { id: 42, kanji: "西", reading: "にし", meaning: "Barat", topic: "トピック 7 まち" },
+    { id: 43, kanji: "南", reading: "みなみ", meaning: "Selatan", topic: "トピック 7 まち" },
+    { id: 44, kanji: "北", reading: "きた", meaning: "Utara", topic: "トピック 7 まち" },
+    { id: 45, kanji: "～口", reading: "～ぐち", meaning: "Pintu / Pintu Masuk-Keluar", topic: "トピック 7 まち" },
+    { id: 46, kanji: "東口", reading: "ひがしぐち", meaning: "Pintu Timur", topic: "トピック 7 まち" },
+    { id: 47, kanji: "西口", reading: "にしぐち", meaning: "Pintu Barat", topic: "トピック 7 まち" },
+    { id: 48, kanji: "南口", reading: "みなみぐち", meaning: "Pintu Selatan", topic: "トピック 7 まち" },
+    { id: 49, kanji: "北口", reading: "きたぐち", meaning: "Pintu Utara", topic: "トピック 7 まち" },
+    { id: 50, kanji: "買います", reading: "かいます", meaning: "Membeli", topic: "トピック 8 かいもの" },
+    { id: 51, kanji: "買いもの", reading: "かいもの", meaning: "Belanja", topic: "トピック 8 かいもの" },
+    { id: 52, kanji: "お金", reading: "おかね", meaning: "Uang", topic: "トピック 8 かいもの" },
+    { id: 53, kanji: "～円", reading: "～えん", meaning: "Yen", topic: "トピック 8 かいもの" },
+    { id: 54, kanji: "百", reading: "ひゃく", meaning: "Ratus / Ratusan", topic: "トピック 8 かいもの" },
+    { id: 55, kanji: "千", reading: "せん", meaning: "Ribu / Ribuan", topic: "トピック 8 かいもの" },
+    { id: 56, kanji: "万", reading: "まん", meaning: "Puluh Ribu", topic: "トピック 8 かいもの" },
+    { id: 57, kanji: "百円", reading: "ひゃくえん", meaning: "100 Yen", topic: "トピック 8 かいもの" },
+    { id: 58, kanji: "千円", reading: "せんえん", meaning: "1.000 Yen", topic: "トピック 8 かいもの" },
+    { id: 59, kanji: "一万円", reading: "いちまんえん", meaning: "10.000 Yen", topic: "トピック 8 かいもの" },
+    { id: 60, kanji: "行きます", reading: "いきます", meaning: "Pergi", topic: "トピック 9 やすみのひ 2" },
+    { id: 61, kanji: "来ます", reading: "きます", meaning: "Datang", topic: "トピック 9 やすみのひ 2" },
+    { id: 62, kanji: "会います", reading: "あいます", meaning: "Bertemu", topic: "トピック 9 やすみのひ 2" },
+    { id: 63, kanji: "休みます", reading: "やすみます", meaning: "Istirahat / Libur", topic: "トピック 9 やすみのひ 2" },
+    { id: 64, kanji: "日本", reading: "にほん／にっぽん", meaning: "Jepang", topic: "トピック 9 やすみのひ 2" },
+    { id: 65, kanji: "東京", reading: "とうきょう", meaning: "Tokyo", topic: "トピック 9 やすみのひ 2" },
+    { id: 66, kanji: "私", reading: "わたし", meaning: "Saya", topic: "初級1 トピック 1" },
+    { id: 67, kanji: "父", reading: "ちち", meaning: "Ayah (Kandung)", topic: "初級1 トピック 1" },
+    { id: 68, kanji: "母", reading: "はは", meaning: "Ibu (Kandung)", topic: "初級1 トピック 1" },
+    { id: 69, kanji: "子ども", reading: "こども", meaning: "Anak", topic: "初級1 トピック 1" },
+    { id: 70, kanji: "男", reading: "おとこ", meaning: "Laki-laki", topic: "初級1 トピック 1" },
+    { id: 71, kanji: "女", reading: "おんな", meaning: "Perempuan", topic: "初級1 トピック 1" },
+    { id: 72, kanji: "人", reading: "ひと", meaning: "Orang", topic: "初級1 トピック 1" },
+    { id: 73, kanji: "お父さん", reading: "おとうさん", meaning: "Ayah (Orang lain/Panggilan)", topic: "初級1 トピック 1" },
+    { id: 74, kanji: "お母さん", reading: "おかあさん", meaning: "Ibu (Orang lain/Panggilan)", topic: "初級1 トピック 1" },
+    { id: 75, kanji: "何人", reading: "なんにん", meaning: "Berapa orang", topic: "初級1 トピック 1" },
+    { id: 76, kanji: "国", reading: "くに", meaning: "Negara", topic: "初級1 トピック 1" },
+    { id: 77, kanji: "外国", reading: "がいこく", meaning: "Luar Negeri", topic: "初級1 トピック 1" },
+    { id: 78, kanji: "～語", reading: "～ご", meaning: "Bahasa ~", topic: "初級1 トピック 1" },
+    { id: 79, kanji: "日本語", reading: "にほんご", meaning: "Bahasa Jepang", topic: "初級1 トピック 1" },
+    { id: 80, kanji: "英語", reading: "えいご", meaning: "Bahasa Inggris", topic: "初級1 トピック 1" },
+    { id: 81, kanji: "中国語", reading: "ちゅうごくご", meaning: "Bahasa Mandarin", topic: "初級1 トピック 1" },
+    { id: 82, kanji: "～人", reading: "～じん", meaning: "Orang (warganegara) ~", topic: "初級1 トピック 1" },
+    { id: 83, kanji: "日本人", reading: "にほんじん", meaning: "Orang Jepang", topic: "初級1 トピック 1" },
+    { id: 84, kanji: "好き", reading: "すき", meaning: "Suka", topic: "初級1 トピック 1" },
+    { id: 85, kanji: "本", reading: "ほん", meaning: "Buku", topic: "初級1 トピック 1" },
+    { id: 86, kanji: "読書", reading: "どくしょ", meaning: "Membaca buku (hobi)", topic: "初級1 トピック 1" },
+    { id: 87, kanji: "何", reading: "なに", meaning: "Apa", topic: "初級1 トピック 1" },
+    { id: 88, kanji: "春", reading: "はる", meaning: "Musim Semi", topic: "初級1 トピック 2" },
+    { id: 89, kanji: "夏", reading: "なつ", meaning: "Musim Panas", topic: "初級1 トピック 2" },
+    { id: 90, kanji: "秋", reading: "あき", meaning: "Musim Gugur", topic: "初級1 トピック 2" },
+    { id: 91, kanji: "冬", reading: "ふゆ", meaning: "Musim Dingin", topic: "初級1 トピック 2" },
+    { id: 92, kanji: "今", reading: "いま", meaning: "Sekarang", topic: "初級1 トピック 2" },
+    { id: 93, kanji: "花", reading: "はな", meaning: "Bunga", topic: "初級1 トピック 2" },
+    { id: 94, kanji: "海", reading: "うみ", meaning: "Laut", topic: "初級1 トピック 2" },
+    { id: 95, kanji: "山", reading: "やま", meaning: "Gunung", topic: "初級1 トピック 2" },
+    { id: 96, kanji: "川", reading: "かわ", meaning: "Sungai", topic: "初級1 トピック 2" },
+    { id: 97, kanji: "今日", reading: "きょう", meaning: "Hari Ini", topic: "初級1 トピック 2" },
+    { id: 98, kanji: "天気", reading: "てんき", meaning: "Cuaca", topic: "初級1 トピック 2" },
+    { id: 99, kanji: "晴れ", reading: "はれ", meaning: "Cerah", topic: "初級1 トピック 2" },
+    { id: 100, kanji: "雨", reading: "あめ", meaning: "Hujan", topic: "初級1 トピック 2" },
+    { id: 101, kanji: "雪", reading: "ゆき", meaning: "Salju", topic: "初級1 トピック 2" },
+    { id: 102, kanji: "雲", reading: "くも", meaning: "Awan", topic: "初級1 トピック 2" },
+    { id: 103, kanji: "風", reading: "かぜ", meaning: "Angin", topic: "初級1 トピック 2" },
+    { id: 104, kanji: "空", reading: "そら", meaning: "Langit", topic: "初級1 トピック 2" },
+    { id: 105, kanji: "町", reading: "まち", meaning: "Kota", topic: "初級1 トピック 3" },
+    { id: 106, kanji: "店", reading: "みせ", meaning: "Toko", topic: "初級1 トピック 3" },
+    { id: 107, kanji: "人気", reading: "にんき", meaning: "Populer", topic: "初級1 トピック 3" },
+    { id: 108, kanji: "多い", reading: "おおい", meaning: "Banyak", topic: "初級1 トピック 3" },
+    { id: 109, kanji: "少ない", reading: "すくない", meaning: "Sedikit", topic: "初級1 トピック 3" },
+    { id: 110, kanji: "高い", reading: "たかい", meaning: "Mahal / Tinggi", topic: "初級1 トピック 3" },
+    { id: 111, kanji: "安い", reading: "やすい", meaning: "Murah", topic: "初級1 トピック 3" },
+    { id: 112, kanji: "広い", reading: "ひろい", meaning: "Luas", topic: "初級1 トピック 3" },
+    { id: 113, kanji: "道", reading: "みち", meaning: "Jalan", topic: "初級1 トピック 3" },
+    { id: 114, kanji: "通り", reading: "とおり", meaning: "Jalanan / Jalan Besar", topic: "初級1 トピック 3" },
+    { id: 115, kanji: "右", reading: "みぎ", meaning: "Kanan", topic: "初級1 トピック 3" },
+    { id: 116, kanji: "左", reading: "ひだり", meaning: "Kiri", topic: "初級1 トピック 3" },
+    { id: 117, kanji: "一つ", reading: "ひとつ", meaning: "Satu buah", topic: "初級1 トピック 3" },
+    { id: 118, kanji: "二つ", reading: "ふたつ", meaning: "Dua buah", topic: "初級1 トピック 3" },
+    { id: 119, kanji: "赤い", reading: "あかい", meaning: "Merah", topic: "初級1 トピック 3" },
+    { id: 120, kanji: "青い", reading: "あおい", meaning: "Biru", topic: "初級1 トピック 3" },
+    { id: 121, kanji: "黒い", reading: "くろい", meaning: "Hitam", topic: "初級1 トピック 3" },
+    { id: 122, kanji: "白い", reading: "しろい", meaning: "Putih", topic: "初級1 トピック 3" },
+    { id: 123, kanji: "時間", reading: "じかん", meaning: "Waktu / Jam", topic: "初級1 トピック 4" },
+    { id: 124, kanji: "場所", reading: "ばしょ", meaning: "Tempat", topic: "初級1 トピック 4" },
+    { id: 125, kanji: "駅", reading: "えき", meaning: "Stasiun", topic: "初級1 トピック 4" },
+    { id: 126, kanji: "日", reading: "ひ", meaning: "Hari", topic: "初級1 トピック 4" },
+    { id: 127, kanji: "出かけます", reading: "でかけます", meaning: "Bepergian / Keluar rumah", topic: "初級1 トピック 4" },
+    { id: 128, kanji: "待ちます", reading: "まちます", meaning: "Menunggu", topic: "初級1 トピック 4" },
+    { id: 129, kanji: "止まります", reading: "とまります", meaning: "Berhenti", topic: "初級1 トピック 4" },
+    { id: 130, kanji: "食事", reading: "しょくじ", meaning: "Makan (bersama)", topic: "初級1 トピック 4" },
+    { id: 131, kanji: "仕事", reading: "しごと", meaning: "Pekerjaan", topic: "初級1 トピック 4" },
+    { id: 132, kanji: "前", reading: "まえ", meaning: "Depan / Sebelum", topic: "初級1 トピック 4" },
+    { id: 133, kanji: "後", reading: "あと", meaning: "Belakang / Sesudah", topic: "初級1 トピック 4" },
+    { id: 134, kanji: "朝", reading: "あさ", meaning: "Pagi", topic: "初級1 トピック 4" },
+    { id: 135, kanji: "昼", reading: "ひる", meaning: "Siang", topic: "初級1 トピック 4" },
+    { id: 136, kanji: "夜", reading: "よる", meaning: "Malam", topic: "初級1 トピック 4" },
+    { id: 137, kanji: "乗ります", reading: "のります", meaning: "Naik (kendaraan)", topic: "初級1 トピック 4" },
+    { id: 138, kanji: "学校", reading: "がっこう", meaning: "Sekolah", topic: "初級1 トピック 5" },
+    { id: 139, kanji: "小学校", reading: "しょうがっこう", meaning: "SD", topic: "初級1 トピック 5" },
+    { id: 140, kanji: "中学校", reading: "ちゅうがっこう", meaning: "SMP", topic: "初級1 トピック 5" },
+    { id: 141, kanji: "高校", reading: "こうこう", meaning: "SMA", topic: "初級1 トピック 5" },
+    { id: 142, kanji: "大学", reading: "だいがく", meaning: "Universitas", topic: "初級1 トピック 5" },
+    { id: 143, kanji: "先生", reading: "せんせい", meaning: "Guru", topic: "初級1 トピック 5" },
+    { id: 144, kanji: "学生", reading: "がくせい", meaning: "Siswa / Mahasiswa", topic: "初級1 トピック 5" },
+    { id: 145, kanji: "～年生", reading: "～ねんせい", meaning: "Tingkat/Kelas ~", topic: "初級1 トピック 5" },
+    { id: 146, kanji: "勉強", reading: "べんきょう", meaning: "Belajar", topic: "初級1 トピック 5" },
+    { id: 147, kanji: "文化", reading: "ぶんか", meaning: "Kebudayaan", topic: "初級1 トピック 5" },
+    { id: 148, kanji: "音楽", reading: "おんがく", meaning: "Musik", topic: "初級1 トピック 5" },
+    { id: 149, kanji: "旅行", reading: "りょこう", meaning: "Wisata / Jalan-jalan", topic: "初級1 トピック 5" },
+    { id: 150, kanji: "留学", reading: "りゅうがく", meaning: "Studi luar negeri", topic: "初級1 トピック 5" },
+    { id: 151, kanji: "友だち", reading: "ともだち", meaning: "Teman", topic: "初級1 トピック 5" },
+    { id: 152, kanji: "楽しい", reading: "たのしい", meaning: "Menyenangkan", topic: "初級1 トピック 5" },
+    { id: 153, kanji: "週", reading: "しゅう", meaning: "Minggu (pekan)", topic: "初級1 トピック 5" },
+    { id: 154, kanji: "～回", reading: "～かい", meaning: "~ kali", topic: "初級1 トピック 5" },
+    { id: 155, kanji: "食べ物", reading: "たべもの", meaning: "Makanan", topic: "初級1 トピック 6" },
+    { id: 156, kanji: "飲み物", reading: "のみもの", meaning: "Minuman", topic: "初級1 トピック 6" },
+    { id: 157, kanji: "お茶", reading: "おちゃ", meaning: "Teh", topic: "初級1 トピック 6" },
+    { id: 158, kanji: "お酒", reading: "おさけ", meaning: "Minuman beralkohol / Sake", topic: "初級1 トピック 6" },
+    { id: 159, kanji: "作ります", reading: "つくります", meaning: "Membuat", topic: "初級1 トピック 6" },
+    { id: 160, kanji: "持っていきます", reading: "もっていきます", meaning: "Membawa pergi", topic: "初級1 トピック 6" },
+    { id: 161, kanji: "お願いしま", reading: "おねがいします", meaning: "Minta tolong", topic: "初級1 トピック 6" },
+    { id: 162, kanji: "料理", reading: "りょうり", meaning: "Masakan", topic: "初級1 トピック 6" },
+    { id: 163, kanji: "味", reading: "あじ", meaning: "Rasa", topic: "初級1 トピック 6" },
+    { id: 164, kanji: "色", reading: "いろ", meaning: "Warna", topic: "初級1 トピック 6" },
+    { id: 165, kanji: "野菜", reading: "やさい", meaning: "Sayuran", topic: "初級1 トピック 6" },
+    { id: 166, kanji: "少し", reading: "すこし", meaning: "Sedikit", topic: "初級1 トピック 6" },
+    { id: 167, kanji: "中", reading: "なか", meaning: "Dalam / Dalam proses", topic: "初級1 トピック 6" },
+    { id: 168, kanji: "入っています", reading: "はいっています", meaning: "Terdapat / Berisi", topic: "初級1 トピック 6" },
+    { id: 169, kanji: "会社", reading: "かいしゃ", meaning: "Perusahaan", topic: "初級1 トピック 7" },
+    { id: 170, kanji: "本社", reading: "ほんしゃ", meaning: "Kantor Pusat", topic: "初級1 トピック 7" },
+    { id: 171, kanji: "支社", reading: "ししゃ", meaning: "Kantor Cabang", topic: "初級1 トピック 7" },
+    { id: 172, kanji: "出張", reading: "しゅっちょう", meaning: "Dinas luar kota", topic: "初級1 トピック 7" },
+    { id: 173, kanji: "空港", reading: "くうこう", meaning: "Bandara", topic: "初級1 トピック 7" },
+    { id: 174, kanji: "出発", reading: "しゅっぱつ", meaning: "Keberangkatan", topic: "初級1 トピック 7" },
+    { id: 175, kanji: "到着", reading: "とうちゃく", meaning: "Kedatangan", topic: "初級1 トピック 7" },
+    { id: 176, kanji: "午前", reading: "ごぜん", meaning: "AM (Sebelum siang)", topic: "初級1 トピック 7" },
+    { id: 177, kanji: "午後", reading: "ごご", meaning: "PM (Setelah siang)", topic: "初級1 トピック 7" },
+    { id: 178, kanji: "自分", reading: "じぶん", meaning: "Diri sendiri", topic: "初級1 トピック 7" },
+    { id: 179, kanji: "電話", reading: "でんわ", meaning: "Telepon", topic: "初級1 トピック 7" },
+    { id: 180, kanji: "電気", reading: "でんき", meaning: "Listrik", topic: "初級1 トピック 7" },
+    { id: 181, kanji: "電車", reading: "でんしゃ", meaning: "Kereta listrik", topic: "初級1 トピック 7" },
+    { id: 182, kanji: "車", reading: "くるま", meaning: "Mobil", topic: "初級1 トピック 7" },
+    { id: 183, kanji: "送ります", reading: "おくります", meaning: "Mengirim / Mengantar", topic: "初級1 トピック 7" },
+    { id: 184, kanji: "使います", reading: "つかいます", meaning: "Menggunakan", topic: "初級1 トピック 7" },
+    { id: 185, kanji: "借ります", reading: "かります", meaning: "Meminjam", topic: "初級1 トピック 7" },
+    { id: 186, kanji: "体", reading: "からだ", meaning: "Tubuh", topic: "初級1 トピック 8" },
+    { id: 187, kanji: "頭", reading: "あたま", meaning: "Kepala", topic: "初級1 トピック 8" },
+    { id: 188, kanji: "目", reading: "め", meaning: "Mata", topic: "初級1 トピック 8" },
+    { id: 189, kanji: "口", reading: "くち", meaning: "Mulut", topic: "初級1 トピック 8" },
+    { id: 190, kanji: "耳", reading: "みみ", meaning: "Telinga", topic: "初級1 トピック 8" },
+    { id: 191, kanji: "手", reading: "て", meaning: "Tangan", topic: "初級1 トピック 8" },
+    { id: 192, kanji: "足", reading: "あし", meaning: "Kaki", topic: "初級1 トピック 8" },
+    { id: 193, kanji: "上", reading: "うえ", meaning: "Atas", topic: "初級1 トピック 8" },
+    { id: 194, kanji: "下", reading: "した", meaning: "Bawah", topic: "初級1 トピック 8" },
+    { id: 195, kanji: "毎～", reading: "まい～", meaning: "Setiap ~", topic: "初級1 トピック 8" },
+    { id: 196, kanji: "毎朝", reading: "まいあさ", meaning: "Setiap pagi", topic: "初級1 トピック 8" },
+    { id: 197, kanji: "毎日", reading: "まいにち", meaning: "Setiap hari", topic: "初級1 トピック 8" },
+    { id: 198, kanji: "週末", reading: "しゅうまつ", meaning: "Akhir pekan", topic: "初級1 トピック 8" },
+    { id: 199, kanji: "元気", reading: "げんき", meaning: "Sehat / Bersemangat", topic: "初級1 トピック 8" },
+    { id: 200, kanji: "外", reading: "そと", meaning: "Luar", topic: "初級1 トピック 8" },
+    { id: 201, kanji: "起きます", reading: "おきます", meaning: "Bangun", topic: "初級1 トピック 8" },
+    { id: 202, kanji: "歩きます", reading: "あるきます", meaning: "Berjalan kaki", topic: "初級1 トピック 8" },
+    { id: 203, kanji: "走ります", reading: "はしります", meaning: "Berlari", topic: "初級1 トピック 8" },
+    { id: 204, kanji: "泳ぎます", reading: "およぎます", meaning: "Berenang", topic: "初級1 トピック 8" },
+    { id: 205, kanji: "お祝い", reading: "おいわい", meaning: "Perayaan / Selamat", topic: "初級1 トピック 9" },
+    { id: 206, kanji: "誕生日", reading: "たんじょうび", meaning: "Ulang Tahun", topic: "初級1 トピック 9" },
+    { id: 207, kanji: "結婚", reading: "けっこん", meaning: "Pernikahan", topic: "初級1 トピック 9" },
+    { id: 208, kanji: "絵", reading: "え", meaning: "Gambar / Lukisan", topic: "初級1 トピック 9" },
+    { id: 209, kanji: "写真", reading: "しゃしん", meaning: "Foto", topic: "初級1 トピック 9" },
+    { id: 210, kanji: "時計", reading: "とけい", meaning: "Jam dinding/tangan", topic: "初級1 トピック 9" },
+    { id: 211, kanji: "着ます", reading: "きます", meaning: "Memakai (baju)", topic: "初級1 トピック 9" },
+    { id: 212, kanji: "先～", reading: "せん～", meaning: "~ Lalu", topic: "初級1 トピック 9" },
+    { id: 213, kanji: "先週", reading: "せんしゅう", meaning: "Minggu lalu", topic: "初級1 トピック 9" },
+    { id: 214, kanji: "今～", reading: "こん～", meaning: "~ Ini", topic: "初級1 トピック 9" },
+    { id: 215, kanji: "今月", reading: "こんげつ", meaning: "Bulan ini", topic: "初級1 トピック 9" },
+    { id: 216, kanji: "来～", reading: "らい～", meaning: "~ Depan", topic: "初級1 トピック 9" },
+    { id: 217, kanji: "来年", reading: "らいねん", meaning: "Tahun depan", topic: "初級1 トピック 9" },
+    { id: 218, kanji: "今年", reading: "ことし", meaning: "Tahun ini", topic: "初級1 トピック 9" },
+    { id: 219, kanji: "去年", reading: "きょねん", meaning: "Tahun lalu", topic: "初級1 トピック 9" },
+    { id: 220, kanji: "家", reading: "いえ", meaning: "Rumah", topic: "初級1 トピック 9" },
+    { id: 221, kanji: "思います", reading: "おもいます", meaning: "Berpikir / Merasa", topic: "初級1 トピック 9" },
+    { id: 222, kanji: "自己紹介", reading: "じこしょうかい", meaning: "Perkenalan diri", topic: "初級2 トピック 1" },
+    { id: 223, kanji: "名前", reading: "なまえ", meaning: "Nama", topic: "初級2 トピック 1" },
+    { id: 224, kanji: "意味", reading: "いみ", meaning: "Arti / Makna", topic: "初級2 トピック 1" },
+    { id: 225, kanji: "本屋", reading: "ほんや", meaning: "Toko Buku", topic: "初級2 トピック 1" },
+    { id: 226, kanji: "近く", reading: "ちかく", meaning: "Dekat", topic: "初級2 トピック 1" },
+    { id: 227, kanji: "住みます", reading: "すみます", meaning: "Tinggal / Bermukim", topic: "初級2 トピック 1" },
+    { id: 228, kanji: "働きます", reading: "はたらきます", meaning: "Bekerja", topic: "初級2 トピック 1" },
+    { id: 229, kanji: "～番目", reading: "～ばんめ", meaning: "Urutan ke ~", topic: "初級2 トピック 1" },
+    { id: 230, kanji: "兄", reading: "あに", meaning: "Kakak Laki-laki (Kandung)", topic: "初級2 トピック 1" },
+    { id: 231, kanji: "お兄さん", reading: "おにいさん", meaning: "Kakak Laki-laki", topic: "初級2 トピック 1" },
+    { id: 232, kanji: "姉", reading: "あね", meaning: "Kakak Perempuan (Kandung)", topic: "初級2 トピック 1" },
+    { id: 233, kanji: "お姉さん", reading: "おねえさん", meaning: "Kakak Perempuan", topic: "初級2 トピック 1" },
+    { id: 234, kanji: "弟", reading: "おとうと", meaning: "Adik Laki-laki", topic: "初級2 トピック 1" },
+    { id: 235, kanji: "妹", reading: "いもうと", meaning: "Adik Perempuan", topic: "初級2 トピック 1" },
+    { id: 236, kanji: "家族", reading: "かぞく", meaning: "Keluarga", topic: "初級2 トピック 1" },
+    { id: 237, kanji: "長い", reading: "ながい", meaning: "Panjang", topic: "初級2 トピック 1" },
+    { id: 238, kanji: "短い", reading: "みじかい", meaning: "Pendek", topic: "初級2 トピック 1" },
+    { id: 239, kanji: "低い", reading: "ひくい", meaning: "Rendah", topic: "初級2 トピック 1" },
+    { id: 240, kanji: "上手", reading: "じょうず", meaning: "Mahir / Pintar", topic: "初級2 トピック 1" },
+    { id: 241, kanji: "歌", reading: "うた", meaning: "Lagu", topic: "初級2 トピック 1" },
+    { id: 242, kanji: "歌います", reading: "うたいます", meaning: "Bernyanyi", topic: "初級2 トピック 1" },
+    { id: 243, kanji: "客", reading: "きゃく", meaning: "Tamu / Pelanggan", topic: "初級2 トピック 2" },
+    { id: 244, kanji: "注文", reading: "ちゅうもん", meaning: "Pesanan", topic: "初級2 トピック 2" },
+    { id: 245, kanji: "洋食", reading: "ようしょく", meaning: "Masakan Barat", topic: "初級2 トピック 2" },
+    { id: 246, kanji: "和食", reading: "わしょく", meaning: "Masakan Jepang", topic: "初級2 トピック 2" },
+    { id: 247, kanji: "牛肉", reading: "ぎゅうにく", meaning: "Daging Sapi", topic: "初級2 トピック 2" },
+    { id: 248, kanji: "地方", reading: "ちほう", meaning: "Daerah / Wilayah", topic: "初級2 トピック 2" },
+    { id: 249, kanji: "有名", reading: "ゆうめい", meaning: "Terkenal", topic: "初級2 トピック 2" },
+    { id: 250, kanji: "生", reading: "なま", meaning: "Mentah / Segar", topic: "初級2 トピック 2" },
+    { id: 251, kanji: "冷たい", reading: "つめたい", meaning: "Dingin (benda/suasana)", topic: "初級2 トピック 2" },
+    { id: 252, kanji: "ご飯", reading: "ごはん", meaning: "Nasi / Makanan", topic: "初級2 トピック 2" },
+    { id: 253, kanji: "塩", reading: "しお", meaning: "Garam", topic: "初級2 トピック 2" },
+    { id: 254, kanji: "全部", reading: "ぜんぶ", meaning: "Semua / Seluruhnya", topic: "初級2 トピック 2" },
+    { id: 255, kanji: "～方", reading: "～かた", meaning: "Cara ~", topic: "初級2 トピック 2" },
+    { id: 256, kanji: "食べ方", reading: "たべかた", meaning: "Cara makan", topic: "初級2 トピック 2" },
+    { id: 257, kanji: "熱い", reading: "あつい", meaning: "Panas (benda)", topic: "初級2 トピック 2" },
+    { id: 258, kanji: "苦手", reading: "にがて", meaning: "Tidak mahir / Lemah", topic: "初級2 トピック 2" },
+    { id: 259, kanji: "入れます", reading: "いれます", meaning: "Memasukkan", topic: "初級2 トピック 2" },
+    { id: 260, kanji: "木", reading: "き", meaning: "Pohon", topic: "初級2 トピック 3" },
+    { id: 261, kanji: "森", reading: "もり", meaning: "Hutan", topic: "初級2 トピック 3" },
+    { id: 262, kanji: "島", reading: "しま", meaning: "Pulau", topic: "初級2 トピック 3" },
+    { id: 263, kanji: "自然", reading: "しぜん", meaning: "Alam", topic: "初級2 トピック 3" },
+    { id: 264, kanji: "船", reading: "ふね", meaning: "Kapal Laut", topic: "初級2 トピック 3" },
+    { id: 265, kanji: "暑い", reading: "あつい", meaning: "Panas (cuaca)", topic: "初級2 トピック 3" },
+    { id: 266, kanji: "帰ります", reading: "かえります", meaning: "Pulang", topic: "初級2 トピック 3" },
+    { id: 267, kanji: "予約します", reading: "よやくします", meaning: "Memesan / Reservasi", topic: "初級2 トピック 3" },
+    { id: 268, kanji: "運転します", reading: "うんてんします", meaning: "Menyetir", topic: "初級2 トピック 3" },
+    { id: 269, kanji: "～中", reading: "～ちゅう", meaning: "Sedang dalam ~", topic: "初級2 トピック 3" },
+    { id: 270, kanji: "旅行中", reading: "りょこうちゅう", meaning: "Sedang berwisata", topic: "初級2 トピック 3" },
+    { id: 271, kanji: "観光地", reading: "かんこうち", meaning: "Tempat Wisata", topic: "初級2 トピック 3" },
+    { id: 272, kanji: "女性", reading: "じょせい", meaning: "Wanita", topic: "初級2 トピック 3" },
+    { id: 273, kanji: "男性", reading: "だんせい", meaning: "Pria", topic: "初級2 トピック 3" },
+    { id: 274, kanji: "動物", reading: "どうぶつ", meaning: "Hewan", topic: "初級2 トピック 3" },
+    { id: 275, kanji: "空気", reading: "くうき", meaning: "Udara", topic: "初級2 トピック 3" },
+    { id: 276, kanji: "料金", reading: "りょうきん", meaning: "Biaya / Tarif", topic: "初級2 トピック 3" },
+    { id: 277, kanji: "無料", reading: "むりょう", meaning: "Gratis", topic: "初級2 トピック 3" },
+    { id: 278, kanji: "明るい", reading: "あかるい", meaning: "Terang / Ceria", topic: "初級2 トピック 3" },
+    { id: 279, kanji: "便利", reading: "べんり", meaning: "Praktis", topic: "初級2 トピック 3" },
+    { id: 280, kanji: "～中", reading: "～じゅう", meaning: "Sepanjang ~", topic: "初級2 トピック 3" },
+    { id: 281, kanji: "一年中", reading: "いちねんじゅう", meaning: "Sepanjang tahun", topic: "初級2 トピック 3" },
+    { id: 282, kanji: "受付", reading: "うけつけ", meaning: "Resepsionis", topic: "初級2 トピック 4" },
+    { id: 283, kanji: "広場", reading: "ひろば", meaning: "Lapangan / Alun-alun", topic: "初級2 トピック 4" },
+    { id: 284, kanji: "問題", reading: "もんだい", meaning: "Masalah / Soal", topic: "初級2 トピック 4" },
+    { id: 285, kanji: "同じ", reading: "おなじ", meaning: "Sama", topic: "初級2 トピック 4" },
+    { id: 286, kanji: "集まります", reading: "あつまります", meaning: "Berkumpul", topic: "初級2 トピック 4" },
+    { id: 287, kanji: "始まります", reading: "はじまります", meaning: "Dimulai", topic: "初級2 トピック 4" },
+    { id: 288, kanji: "終わります", reading: "おわります", meaning: "Selesai", topic: "初級2 トピック 4" },
+    { id: 289, kanji: "中止します", reading: "ちゅうしします", meaning: "Dibatalkan", topic: "初級2 トピック 4" },
+    { id: 290, kanji: "教えます", reading: "おしえます", meaning: "Mengajar / Memberitahu", topic: "初級2 トピック 4" },
+    { id: 291, kanji: "祭り", reading: "まつり", meaning: "Festival", topic: "初級2 トピック 4" },
+    { id: 292, kanji: "日本祭", reading: "にほんまつり", meaning: "Festival Jepang", topic: "初級2 トピック 4" },
+    { id: 293, kanji: "会場", reading: "かいじょう", meaning: "Lokasi acara", topic: "初級2 トピック 4" },
+    { id: 294, kanji: "入場料", reading: "にゅうじょうりょう", meaning: "Biaya masuk", topic: "初級2 トピック 4" },
+    { id: 295, kanji: "参加者", reading: "さんかしゃ", meaning: "Peserta", topic: "初級2 トピック 4" },
+    { id: 296, kanji: "急ぎます", reading: "いそぎます", meaning: "Buru-buru", topic: "初級2 トピック 4" },
+    { id: 297, kanji: "決めます", reading: "きめます", meaning: "Menentukan", topic: "初級2 トピック 4" },
+    { id: 298, kanji: "知ります", reading: "しります", meaning: "Mengetahui", topic: "初級2 トピック 4" },
+    { id: 299, kanji: "正月", reading: "しょうがつ", meaning: "Tahun Baru", topic: "初級2 トピック 5" },
+    { id: 300, kanji: "年末", reading: "ねんまつ", meaning: "Akhir Tahun", topic: "初級2 トピック 5" },
+    { id: 301, kanji: "年始", reading: "ねんし", meaning: "Awal Tahun", topic: "初級2 トピック 5" },
+    { id: 302, kanji: "親", reading: "おや", meaning: "Orang Tua", topic: "初級2 トピック 5" },
+    { id: 303, kanji: "忙しい", reading: "いそがしい", meaning: "Sibuk", topic: "初級2 トピック 5" },
+    { id: 304, kanji: "特別", reading: "とくべつ", meaning: "Spesial / Khusus", topic: "初級2 トピック 5" },
+    { id: 305, kanji: "帰国", reading: "きこく", meaning: "Pulang ke negara asal", topic: "初級2 トピック 5" },
+    { id: 306, kanji: "喜びます", reading: "よろこびます", meaning: "Bergembira", topic: "初級2 トピック 5" },
+    { id: 307, kanji: "幸せ", reading: "しあわせ", meaning: "Bahagia", topic: "初級2 トピック 5" },
+    { id: 308, kanji: "成長", reading: "せいちょう", meaning: "Pertumbuhan", topic: "初級2 トピック 5" },
+    { id: 309, kanji: "長生き", reading: "ながいき", meaning: "Umur Panjang", topic: "初級2 トピック 5" },
+    { id: 310, kanji: "願い事", reading: "ねがいごと", meaning: "Permohonan / Harapan", topic: "初級2 トピック 5" },
+    { id: 311, kanji: "合格", reading: "ごうかく", meaning: "Lulus", topic: "初級2 トピック 5" },
+    { id: 312, kanji: "試験", reading: "しけん", meaning: "Ujian", topic: "初級2 トピック 5" },
+    { id: 313, kanji: "大人", reading: "おとな", meaning: "Orang Dewasa", topic: "初級2 トピック 5" },
+    { id: 314, kanji: "～式", reading: "～しき", meaning: "Upacara ~", topic: "初級2 トピック 5" },
+    { id: 315, kanji: "～市", reading: "～し", meaning: "Kota ~", topic: "初級2 トピック 5" },
+    { id: 316, kanji: "商品", reading: "しょうひん", meaning: "Produk / Barang", topic: "初級2 トピック 6" },
+    { id: 317, kanji: "電気製品", reading: "でんきせいひん", meaning: "Barang Elektronik", topic: "初級2 トピック 6" },
+    { id: 318, kanji: "電子レンジ", reading: "でんしレンジ", meaning: "Microwave", topic: "初級2 トピック 6" },
+    { id: 319, kanji: "～機", reading: "～き", meaning: "Mesin ~", topic: "初級2 トピック 6" },
+    { id: 320, kanji: "店員", reading: "てんいん", meaning: "Pegawai Toko", topic: "初級2 トピック 6" },
+    { id: 321, kanji: "調子", reading: "ちょうし", meaning: "Kondisi", topic: "初級2 トピック 6" },
+    { id: 322, kanji: "悪い", reading: "わるい", meaning: "Buruk / Jelek", topic: "初級2 トピック 6" },
+    { id: 323, kanji: "動きます", reading: "うごきます", meaning: "Bergerak / Berfungsi", topic: "初級2 トピック 6" },
+    { id: 324, kanji: "考えます", reading: "かんがえます", meaning: "Berpikir", topic: "初級2 トピック 6" },
+    { id: 325, kanji: "音", reading: "おと", meaning: "Suara", topic: "初級2 トピック 6" },
+    { id: 326, kanji: "出ます", reading: "でます", meaning: "Keluar", topic: "初級2 トピック 6" },
+    { id: 327, kanji: "機能", reading: "きのう", meaning: "Fitur / Fungsi", topic: "初級2 トピック 6" },
+    { id: 328, kanji: "省エネ", reading: "しょうエネ", meaning: "Hemat Energi", topic: "初級2 トピック 6" },
+    { id: 329, kanji: "日本製", reading: "にほんせい", meaning: "Buatan Jepang", topic: "初級2 トピック 6" },
+    { id: 330, kanji: "重い", reading: "おもい", meaning: "Berat", topic: "初級2 トピック 6" },
+    { id: 331, kanji: "軽い", reading: "かるい", meaning: "Ringan", topic: "初級2 トピック 6" },
+    { id: 332, kanji: "静か", reading: "しずか", meaning: "Tenang / Sunyi", topic: "初級2 トピック 6" },
+    { id: 333, kanji: "早く", reading: "はやく", meaning: "Cepat", topic: "初級2 トピック 6" },
+    { id: 334, kanji: "方", reading: "ほう", meaning: "Arah / Sisi", topic: "初級2 トピック 6" },
+    { id: 335, kanji: "洗います", reading: "あらいます", meaning: "Mencuci", topic: "初級2 トピック 6" },
+    { id: 336, kanji: "満足します", reading: "まんぞくします", meaning: "Puas", topic: "初級2 トピック 6" },
+    { id: 337, kanji: "京都", reading: "きょうと", meaning: "Kyoto", topic: "初級2 トピック 7" },
+    { id: 338, kanji: "神社", reading: "じんじゃ", meaning: "Kuil Shinto", topic: "初級2 トピック 7" },
+    { id: 339, kanji: "お寺", reading: "おてら", meaning: "Kuil Buddha", topic: "初級2 トピック 7" },
+    { id: 340, kanji: "仏教", reading: "ぶっきょう", meaning: "Agama Buddha", topic: "初級2 トピック 7" },
+    { id: 341, kanji: "歴史", reading: "れきし", meaning: "Sejarah", topic: "初級2 トピック 7" },
+    { id: 342, kanji: "世界", reading: "せかい", meaning: "Dunia", topic: "初級2 トピック 7" },
+    { id: 343, kanji: "中心", reading: "ちゅうしん", meaning: "Pusat", topic: "初級2 トピック 7" },
+    { id: 344, kanji: "～世紀", reading: "～せいき", meaning: "Abad ~", topic: "初級2 トピック 7" },
+    { id: 345, kanji: "～的", reading: "～てき", meaning: "Bersifat ~", topic: "初級2 トピック 7" },
+    { id: 346, kanji: "日本的", reading: "にほんてき", meaning: "Khas Jepang", topic: "初級2 トピック 7" },
+    { id: 347, kanji: "歴史的", reading: "れきしてき", meaning: "Bernilai Sejarah", topic: "初級2 トピック 7" },
+    { id: 348, kanji: "飲食", reading: "いんしょく", meaning: "Makan dan Minum", topic: "初級2 トピック 7" },
+    { id: 349, kanji: "禁止", reading: "きんし", meaning: "Dilarang", topic: "初級2 トピック 7" },
+    { id: 350, kanji: "説明", reading: "せつめい", meaning: "Penjelasan", topic: "初級2 トピック 7" },
+    { id: 351, kanji: "道具", reading: "どうぐ", meaning: "Peralatan / Perkakas", topic: "初級2 トピック 7" },
+    { id: 352, kanji: "博物館", reading: "はくぶつかん", meaning: "Museum", topic: "初級2 トピック 7" },
+    { id: 353, kanji: "必要", reading: "ひつよう", meaning: "Perlu / Penting", topic: "初級2 トピック 7" },
+    { id: 354, kanji: "～階", reading: "～かい", meaning: "Lantai ~", topic: "初級2 トピック 7" },
+    { id: 355, kanji: "油", reading: "あぶら", meaning: "Minyak", topic: "初級2 トピック 8" },
+    { id: 356, kanji: "紙", reading: "かみ", meaning: "Kertas", topic: "初級2 トピック 8" },
+    { id: 357, kanji: "温度", reading: "おんど", meaning: "Suhu", topic: "初級2 トピック 8" },
+    { id: 358, kanji: "活動", reading: "かつどう", meaning: "Kegiatan", topic: "初級2 トピック 8" },
+    { id: 359, kanji: "会議室", reading: "かいぎしつ", meaning: "Ruang Rapat", topic: "初級2 トピック 8" },
+    { id: 360, kanji: "寒い", reading: "さむい", meaning: "Dingin (cuaca)", topic: "初級2 トピック 8" },
+    { id: 361, kanji: "出します", reading: "だします", meaning: "Mengeluarkan / Menyerahkan", topic: "初級2 トピック 8" },
+    { id: 362, kanji: "～度", reading: "～ど", meaning: "~ Derajat", topic: "初級2 トピック 8" },
+    { id: 363, kanji: "～点", reading: "～てん", meaning: "Poin / Nilai ~", topic: "初級2 トピック 8" },
+    { id: 364, kanji: "服", reading: "ふく", meaning: "Pakaian", topic: "初級2 トピック 8" },
+    { id: 365, kanji: "自転車", reading: "じてんしゃ", meaning: "Sepeda", topic: "初級2 トピック 8" },
+    { id: 366, kanji: "自動車", reading: "じどうしゃ", meaning: "Mobil", topic: "初級2 トピック 8" },
+    { id: 367, kanji: "売ります", reading: "うります", meaning: "Menjual", topic: "初級2 トピック 8" },
+    { id: 368, kanji: "貸します", reading: "かします", meaning: "Meminjamkan", topic: "初級2 トピック 8" },
+    { id: 369, kanji: "返します", reading: "かえします", meaning: "Mengembalikan", topic: "初級2 トピック 8" },
+    { id: 370, kanji: "変わります", reading: "かわります", meaning: "Berubah", topic: "初級2 トピック 8" },
+    { id: 371, kanji: "～用", reading: "～よう", meaning: "Untuk keperluan ~", topic: "初級2 トピック 8" },
+    { id: 372, kanji: "子ども用", reading: "こどもよう", meaning: "Untuk anak-anak", topic: "初級2 トピック 8" },
+    { id: 373, kanji: "人生", reading: "じんせい", meaning: "Kehidupan", topic: "初級2 トピック 9" },
+    { id: 374, kanji: "歌手", reading: "かしゅ", meaning: "Penyanyi", topic: "初級2 トピック 9" },
+    { id: 375, kanji: "選手", reading: "せんしゅ", meaning: "Atlet", topic: "初級2 トピック 9" },
+    { id: 376, kanji: "画家", reading: "がか", meaning: "Pelukis", topic: "初級2 トピック 9" },
+    { id: 377, kanji: "作家", reading: "さっか", meaning: "Penulis", topic: "初級2 トピック 9" },
+    { id: 378, kanji: "入学", reading: "にゅうがく", meaning: "Masuk sekolah", topic: "初級2 トピック 9" },
+    { id: 379, kanji: "卒業", reading: "そつぎょう", meaning: "Kelulusan", topic: "初級2 トピック 9" },
+    { id: 380, kanji: "病気", reading: "びょうき", meaning: "Penyakit / Sakit", topic: "初級2 トピック 9" },
+    { id: 381, kanji: "若い", reading: "わかい", meaning: "Muda", topic: "初級2 トピック 9" },
+    { id: 382, kanji: "生まれます", reading: "うまれます", meaning: "Lahir", topic: "初級2 トピック 9" },
+    { id: 383, kanji: "思い出", reading: "おもいで", meaning: "Kenangan", topic: "初級2 トピック 9" },
+    { id: 384, kanji: "生活", reading: "せいかつ", meaning: "Kehidupan sehari-hari", topic: "初級2 トピック 9" },
+    { id: 385, kanji: "映画", reading: "えいが", meaning: "Film", topic: "初級2 トピック 9" },
+    { id: 386, kanji: "夫", reading: "おっと", meaning: "Suami (Kandung)", topic: "初級2 トピック 9" },
+    { id: 387, kanji: "妻", reading: "つま", meaning: "Istri (Kandung)", topic: "初級2 トピック 9" },
+    { id: 388, kanji: "両親", reading: "りょうしん", meaning: "Orang tua", topic: "初級2 トピック 9" },
+    { id: 389, kanji: "不便", reading: "ふべん", meaning: "Tidak praktis", topic: "初級2 トピック 9" },
+    { id: 390, kanji: "選びます", reading: "えらびます", meaning: "Memilih", topic: "初級2 トピック 9" },
+    { id: 391, kanji: "寝ます", reading: "ねます", meaning: "Tidur", topic: "初級2 トピック 9" },
+    { id: 392, kanji: "サッカー場", reading: "サッカーじょう", meaning: "Lapangan Sepak Bola", topic: "初中級 トピック 1" },
+    { id: 393, kanji: "試合", reading: "しあい", meaning: "Pertandingan", topic: "初中級 トピック 1" },
+    { id: 394, kanji: "日曜日", reading: "にちようび", meaning: "Hari Minggu", topic: "初中級 トピック 1" },
+    { id: 395, kanji: "強い", reading: "つよい", meaning: "Kuat", topic: "初中級 トピック 1" },
+    { id: 396, kanji: "弱い", reading: "よわい", meaning: "Lemah", topic: "初中級 トピック 1" },
+    { id: 397, kanji: "勝つ", reading: "かつ", meaning: "Menang", topic: "初中級 トピック 1" },
+    { id: 398, kanji: "負ける", reading: "まける", meaning: "Kalah", topic: "初中級 トピック 1" },
+    { id: 399, kanji: "～対～", reading: "～たい～", meaning: "~ lawan ~", topic: "初中級 トピック 1" },
+    { id: 400, kanji: "庭", reading: "にわ", meaning: "Halaman / Kebun", topic: "初中級 トピック 2" },
+    { id: 401, kanji: "公園", reading: "こうえん", meaning: "Taman", topic: "初中級 トピック 2" },
+    { id: 402, kanji: "病院", reading: "びょういん", meaning: "Rumah Sakit", topic: "初中級 トピック 2" },
+    { id: 403, kanji: "交通", reading: "こうつう", meaning: "Lalu Lintas", topic: "初中級 トピック 2" },
+    { id: 404, kanji: "通勤", reading: "つうきん", meaning: "Perjalanan Kerja", topic: "初中級 トピック 2" },
+    { id: 405, kanji: "安全", reading: "あんぜん", meaning: "Aman", topic: "初中級 トピック 2" },
+    { id: 406, kanji: "危ない", reading: "あぶない", meaning: "Bahaya", topic: "初中級 トピック 2" },
+    { id: 407, kanji: "遠い", reading: "とおい", meaning: "Jauh", topic: "初中級 トピック 2" },
+    { id: 408, kanji: "勤める", reading: "つとめる", meaning: "Bekerja di ~", topic: "初中級 トピック 2" },
+    { id: 409, kanji: "～以上", reading: "～いじょう", meaning: "Lebih dari ~", topic: "初中級 トピック 2" },
+    { id: 410, kanji: "～以下", reading: "～いか", meaning: "Kurang dari ~", topic: "初中級 トピック 2" },
+    { id: 411, kanji: "海外", reading: "かいがい", meaning: "Luar Negeri", topic: "初中級 トピック 3" },
+    { id: 412, kanji: "食生活", reading: "しょくせいかつ", meaning: "Pola Makan", topic: "初中級 トピック 3" },
+    { id: 413, kanji: "健康", reading: "けんこう", meaning: "Kesehatan", topic: "初中級 トピック 3" },
+    { id: 414, kanji: "家庭料理", reading: "かていりょうり", meaning: "Masakan Rumahan", topic: "初中級 トピック 3" },
+    { id: 415, kanji: "材料", reading: "ざいりょう", meaning: "Bahan-bahan", topic: "初中級 トピック 3" },
+    { id: 416, kanji: "量", reading: "りょう", meaning: "Jumlah / Porsi", topic: "初中級 トピック 3" },
+    { id: 417, kanji: "米", reading: "こめ", meaning: "Beras", topic: "初中級 トピック 3" },
+    { id: 418, kanji: "～食", reading: "～しょく", meaning: "Makanan ~", topic: "初中級 トピック 3" },
+    { id: 419, kanji: "朝食", reading: "ちょうしょく", meaning: "Sarapan Pagi", topic: "初中級 トピック 3" },
+    { id: 420, kanji: "昼食", reading: "ちゅうしょく", meaning: "Makan Siang", topic: "初中級 トピック 3" },
+    { id: 421, kanji: "夕食", reading: "ゆうしょく", meaning: "Makan Malam", topic: "初中級 トピック 3" },
+    { id: 422, kanji: "外食", reading: "がいしょく", meaning: "Makan di luar", topic: "初中級 トピック 3" },
+    { id: 423, kanji: "定食", reading: "ていしょく", meaning: "Paket Makanan", topic: "初中級 トピック 3" },
+    { id: 424, kanji: "住所", reading: "じゅうしょ", meaning: "Alamat", topic: "初中級 トピック 4" },
+    { id: 425, kanji: "訪問", reading: "ほうもん", meaning: "Kunjungan", topic: "初中級 トピック 4" },
+    { id: 426, kanji: "経験", reading: "けいけん", meaning: "Pengalaman", topic: "初中級 トピック 4" },
+    { id: 427, kanji: "親切", reading: "しんせつ", meaning: "Ramah / Baik hati", topic: "初中級 トピック 4" },
+    { id: 428, kanji: "座る", reading: "すわる", meaning: "Duduk", topic: "初中級 トピック 4" },
+    { id: 429, kanji: "立つ", reading: "たつ", meaning: "Berdiri", topic: "初中級 トピック 4" },
+    { id: 430, kanji: "～観", reading: "～かん", meaning: "Pandangan ~", topic: "初中級 トピック 4" },
+    { id: 431, kanji: "約～", reading: "やく～", meaning: "Kira-kira ~", topic: "初中級 トピック 4" },
+    { id: 432, kanji: "計画", reading: "けいかく", meaning: "Rencana", topic: "初中級 トピック 5" },
+    { id: 433, kanji: "自信", reading: "じしん", meaning: "Kepercayaan Diri", topic: "初中級 トピック 5" },
+    { id: 434, kanji: "方法", reading: "ほうほう", meaning: "Metode / Cara", topic: "初中級 トピック 5" },
+    { id: 435, kanji: "目的", reading: "もくてき", meaning: "Tujuan", topic: "初中級 トピック 5" },
+    { id: 436, kanji: "難しい", reading: "むずかしい", meaning: "Sulit", topic: "初中級 トピック 5" },
+    { id: 437, kanji: "通じる", reading: "つうじる", meaning: "Dapat dipahami", topic: "初中級 トピック 5" },
+    { id: 438, kanji: "習う", reading: "ならう", meaning: "Belajar (dari orang)", topic: "初中級 トピック 5" },
+    { id: 439, kanji: "学ぶ", reading: "まなぶ", meaning: "Mempelajari", topic: "初中級 トピック 5" },
+    { id: 440, kanji: "～級", reading: "～きゅう", meaning: "Tingkat ~", topic: "初中級 トピック 5" },
+    { id: 441, kanji: "初級", reading: "しょきゅう", meaning: "Tingkat Dasar", topic: "初中級 トピック 5" },
+    { id: 442, kanji: "中級", reading: "ちゅうきゅう", meaning: "Tingkat Menengah", topic: "初中級 トピック 5" },
+    { id: 443, kanji: "上級", reading: "じょうきゅう", meaning: "Tingkat Lanjut", topic: "初中級 トピック 5" },
+    { id: 444, kanji: "相手", reading: "あいて", meaning: "Pasangan / Lawan", topic: "初中級 トピック 6" },
+    { id: 445, kanji: "気持ち", reading: "きもち", meaning: "Perasaan", topic: "初中級 トピック 6" },
+    { id: 446, kanji: "恋人", reading: "こいびと", meaning: "Pacar", topic: "初中級 トピック 6" },
+    { id: 447, kanji: "出会い", reading: "であい", meaning: "Pertemuan", topic: "初中級 トピック 6" },
+    { id: 448, kanji: "最近", reading: "さいきん", meaning: "Akhir-akhir ini", topic: "初中級 トピック 6" },
+    { id: 449, kanji: "最高", reading: "さいこう", meaning: "Terbaik / Paling hebat", topic: "初中級 トピック 6" },
+    { id: 450, kanji: "出席", reading: "しゅっせき", meaning: "Kehadiran", topic: "初中級 トピック 6" },
+    { id: 451, kanji: "招待", reading: "しょうたい", meaning: "Undangan", topic: "初中級 トピック 6" },
+    { id: 452, kanji: "～合う", reading: "～あう", meaning: "Saling ~", topic: "初中級 トピック 6" },
+    { id: 453, kanji: "社会人", reading: "しゃかいじん", meaning: "Anggota Masyarakat / Pekerja", topic: "初中級 トピック 7" },
+    { id: 454, kanji: "職場", reading: "しょくば", meaning: "Tempat Kerja", topic: "初中級 トピック 7" },
+    { id: 455, kanji: "給料", reading: "きゅうりょう", meaning: "Gaji", topic: "初中級 トピック 7" },
+    { id: 456, kanji: "人間関係", reading: "にんげんかんけい", meaning: "Hubungan Antarmanusia", topic: "初中級 トピック 7" },
+    { id: 457, kanji: "親友", reading: "しんゆう", meaning: "Sahabat Karib", topic: "初中級 トピック 7" },
+    { id: 458, kanji: "恋愛", reading: "れんあい", meaning: "Percintaan", topic: "初中級 トピック 7" },
+    { id: 459, kanji: "相談", reading: "そうだん", meaning: "Konsultasi / Curhat", topic: "初中級 トピック 7" },
+    { id: 460, kanji: "心", reading: "こころ", meaning: "Hati / Jiwa", topic: "初中級 トピック 7" },
+    { id: 461, kanji: "心配", reading: "しんぱい", meaning: "Khawatir", topic: "初中級 トピック 7" },
+    { id: 462, kanji: "不安", reading: "ふあん", meaning: "Cemas", topic: "初中級 トピック 7" },
+    { id: 463, kanji: "お客様", reading: "おきゃくさま", meaning: "Tamu / Pelanggan (Hormat)", topic: "初中級 トピック 8" },
+    { id: 464, kanji: "手続き", reading: "てつづき", meaning: "Prosedur administrasi", topic: "初中級 トピック 8" },
+    { id: 465, kanji: "飛行機", reading: "ひこうき", meaning: "Pesawat Terbang", topic: "初中級 トピック 8" },
+    { id: 466, kanji: "変更", reading: "へんこう", meaning: "Perubahan", topic: "初中級 トピック 8" },
+    { id: 467, kanji: "予定", reading: "よてい", meaning: "Jadwal / Rencana", topic: "初中級 トピック 8" },
+    { id: 468, kanji: "利用", reading: "りよう", meaning: "Penggunaan", topic: "初中級 トピック 8" },
+    { id: 469, kanji: "忘れ物", reading: "わすれもの", meaning: "Barang ketinggalan", topic: "初中級 トピック 8" },
+    { id: 470, kanji: "助ける", reading: "たすける", meaning: "Menolong", topic: "初中級 トピック 8" },
+    { id: 471, kanji: "～航空", reading: "～こうくう", meaning: "Maskapai Penerbangan ~", topic: "初中級 トピック 8" },
+    { id: 472, kanji: "～便", reading: "～びん", meaning: "Penerbangan No ~", topic: "初中級 トピック 8" },
+    { id: 473, kanji: "体力", reading: "たいりょく", meaning: "Stamina / Kekuatan Fisik", topic: "初中級 トピック 9" },
+    { id: 474, kanji: "協力", reading: "きょうりょく", meaning: "Kerja Sama", topic: "初中級 トピック 9" },
+    { id: 475, kanji: "担当", reading: "たんとう", meaning: "Penanggung Jawab", topic: "初中級 トピック 9" },
+    { id: 476, kanji: "報告", reading: "ほうこく", meaning: "Laporan", topic: "初中級 トピック 9" },
+    { id: 477, kanji: "連絡", reading: "れんらく", meaning: "Komunikasi / Hubungi", topic: "初中級 トピック 9" },
+    { id: 478, kanji: "募集", reading: "ぼしゅう", meaning: "Perekrutan", topic: "初中級 トピック 9" },
+    { id: 479, kanji: "輸出", reading: "ゆしゅつ", meaning: "Ekspor", topic: "初中級 トピック 9" },
+    { id: 480, kanji: "輸入", reading: "ゆにゅう", meaning: "Impor", topic: "初中級 トピック 9" },
+    { id: 481, kanji: "会話", reading: "かいわ", meaning: "Percakapan", topic: "日本語の勉強" },
+    { id: 482, kanji: "形", reading: "かたち", meaning: "Bentuk", topic: "日本語の勉強" },
+    { id: 483, kanji: "漢字", reading: "かんじ", meaning: "Kanji", topic: "日本語の勉強" },
+    { id: 484, kanji: "答え", reading: "こたえ", meaning: "Jawaban", topic: "日本語の勉強" },
+    { id: 485, kanji: "質問", reading: "しつもん", meaning: "Pertanyaan", topic: "日本語の勉強" },
+    { id: 486, kanji: "正しい", reading: "ただしい", meaning: "Benar / Tepat", topic: "日本語の勉強" },
+    { id: 487, kanji: "読解", reading: "どっかい", meaning: "Pemahaman Membaca", topic: "日本語の勉強" },
+    { id: 488, kanji: "表現", reading: "ひょうげん", meaning: "Ungkapan / Ekspresi", topic: "日本語の勉強" },
+    { id: 489, kanji: "文", reading: "ぶん", meaning: "Kalimat", topic: "日本語の勉強" },
+    { id: 490, kanji: "文型", reading: "ぶんけい", meaning: "Pola Kalimat", topic: "日本語の勉強" },
+    { id: 491, kanji: "文法", reading: "ぶんぽう", meaning: "Tata Bahasa (Grammar)", topic: "日本語の勉強" },
+    { id: 492, kanji: "もう一度", reading: "もういちど", meaning: "Sekali lagi", topic: "日本語の勉強" },
+    { id: 493, kanji: "例", reading: "れい", meaning: "Contoh", topic: "日本語の勉強" },
+    { id: 494, kanji: "練習", reading: "れんしゅう", meaning: "Latihan", topic: "日本語の勉強" }
+];
+
+// Application Global State
+let currentMode = '';
+let targetCount = 40;
+let mcqType = 'reading'; 
+let sessionCards = [];
+let currentIndex = 0;
+let userAnswers = []; 
+let stats = { correct: 0, doubt: 0, wrong: 0 };
+let timerInterval = null;
+let timeLeft = 0;
+let isFlipped = false;
+
+const timeLimits = {
+    25: 360,   // 6 min
+    40: 600,   // 10 min
+    65: 990,   // 16.5 min
+    80: 1200   // 20 min
+};
+
+function shuffle(arr) {
+    let array = [...arr];
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// 🏠 GUARANTEED LOBBY RETURN FUNCTION
+function goToLobby() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    
+    document.getElementById("top-nav").style.display = "none";
+    document.getElementById("config-modal").style.display = "none";
+    document.getElementById("flashcard-screen").style.display = "none";
+    document.getElementById("mcq-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "none";
+    
+    document.getElementById("lobby-screen").style.display = "flex";
+}
+
+function openConfigModal(modeKey) {
+    currentMode = modeKey;
+    document.getElementById("mcq-type-section").style.display = modeKey.startsWith('mcq') ? "block" : "none";
+
+    const isTimed = modeKey.endsWith('timed');
+    document.getElementById("time-25").innerText = isTimed ? "(⏱️ 6 mnt)" : "";
+    document.getElementById("time-40").innerText = isTimed ? "(⏱️ 10 mnt)" : "";
+    document.getElementById("time-65").innerText = isTimed ? "(⏱️ 16.5 mnt)" : "";
+    document.getElementById("time-80").innerText = isTimed ? "(⏱️ 20 mnt)" : "";
+
+    document.getElementById("config-modal").style.display = "flex";
+}
+
+function closeConfigModal() {
+    document.getElementById("config-modal").style.display = "none";
+}
+
+function selectCount(cnt, btnElem) {
+    targetCount = cnt;
+    document.querySelectorAll('.opt-count').forEach(btn => btn.classList.remove('selected'));
+    if (btnElem) {
+        btnElem.classList.add('selected');
+    }
+}
+
+function selectMCQType(type) {
+    mcqType = type;
+    document.getElementById('opt-type-reading').className = type === 'reading' ? 'btn-option selected' : 'btn-option';
+    document.getElementById('opt-type-meaning').className = type === 'meaning' ? 'btn-option selected' : 'btn-option';
+}
+
+function startConfiguredSession() {
+    closeConfigModal();
+    sessionCards = shuffle(rawKanjiData).slice(0, targetCount);
+    currentIndex = 0;
+    userAnswers = new Array(targetCount).fill(null);
+    stats = { correct: 0, doubt: 0, wrong: 0 };
+
+    // Setup Top Navigation Header
+    document.getElementById("lobby-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "none";
+    document.getElementById("top-nav").style.display = "flex";
+
+    // Setup Timer logic
+    if (currentMode.endsWith('timed')) {
+        timeLeft = timeLimits[targetCount] || 600;
+        document.getElementById("timer-display").style.display = "inline-block";
+        updateTimerDisplay();
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                finishSession(true);
+            }
+        }, 1000);
+    } else {
+        document.getElementById("timer-display").style.display = "none";
+    }
+
+    if (currentMode.startsWith('fc')) {
+        document.getElementById("flashcard-screen").style.display = "flex";
+        document.getElementById("mcq-screen").style.display = "none";
+        loadFlashcard();
+    } else {
+        document.getElementById("flashcard-screen").style.display = "none";
+        document.getElementById("mcq-screen").style.display = "flex";
+        loadMCQQuestion();
+    }
+}
+
+function updateTimerDisplay() {
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    document.getElementById("timer-display").innerText = `⏱️ ${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+// Flashcard Mode Logic
+function loadFlashcard() {
+    isFlipped = false;
+    document.getElementById("card").classList.remove("flipped");
+    const item = sessionCards[currentIndex];
+
+    document.getElementById("session-info").innerText = `Flashcard ${currentIndex + 1}/${targetCount}`;
+    document.getElementById("fc-progress-fill").style.width = `${((currentIndex) / targetCount) * 100}%`;
+
+    document.getElementById("fc-kanji").innerText = item.kanji;
+    document.getElementById("fc-kanji-back").innerText = item.kanji;
+    document.getElementById("fc-reading").innerText = item.reading;
+    document.getElementById("fc-meaning").innerText = item.meaning;
+    document.getElementById("fc-topic").innerText = item.topic;
+
+    setFCButtonsEnabled(false);
+}
+
+function flipCard() {
+    isFlipped = !isFlipped;
+    document.getElementById("card").classList.toggle("flipped", isFlipped);
+    if (isFlipped) setFCButtonsEnabled(true);
+}
+
+function setFCButtonsEnabled(enabled) {
+    document.getElementById("btn-red").disabled = !enabled;
+    document.getElementById("btn-yellow").disabled = !enabled;
+    document.getElementById("btn-green").disabled = !enabled;
+}
+
+function rateFlashcard(status) {
+    if (!isFlipped) return;
+    userAnswers[currentIndex] = status;
+    currentIndex++;
+
+    if (currentIndex < targetCount) {
+        loadFlashcard();
+    } else {
+        finishSession(false);
+    }
+}
+
+// Multiple Choice Mode Logic
+function loadMCQQuestion() {
+    const item = sessionCards[currentIndex];
+    document.getElementById("session-info").innerText = `Soal ${currentIndex + 1}/${targetCount}`;
+    document.getElementById("mcq-progress-fill").style.width = `${((currentIndex) / targetCount) * 100}%`;
+    document.getElementById("mcq-kanji").innerText = item.kanji;
+
+    // Generate 4 Options (1 Correct + 3 Distractors) if not already generated
+    if (!item.options) {
+        let distractors = rawKanjiData.filter(k => k.id !== item.id);
+        distractors = shuffle(distractors).slice(0, 3);
+        item.options = shuffle([item, ...distractors]);
+    }
+
+    for (let i = 0; i < 4; i++) {
+        const optObj = item.options[i];
+        const optText = mcqType === 'reading' ? optObj.reading : optObj.meaning;
+        document.getElementById(`opt-text-${i}`).innerText = optText;
+
+        const btn = document.getElementsByClassName("btn-mcq-opt")[i];
+        btn.classList.toggle("selected", userAnswers[currentIndex] === i);
+    }
+
+    document.getElementById("btn-prev-mcq").disabled = (currentIndex === 0);
+    document.getElementById("btn-next-mcq").innerText = (currentIndex === targetCount - 1) ? "Selesai ✨" : "Lanjut →";
+}
+
+function selectMCQOption(optIdx) {
+    userAnswers[currentIndex] = optIdx;
+    for (let i = 0; i < 4; i++) {
+        document.getElementsByClassName("btn-mcq-opt")[i].classList.toggle("selected", i === optIdx);
+    }
+}
+
+function prevMCQQuestion() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        loadMCQQuestion();
+    }
+}
+
+function nextMCQQuestion() {
+    if (currentIndex < targetCount - 1) {
+        currentIndex++;
+        loadMCQQuestion();
+    } else {
+        finishSession(false);
+    }
+}
+
+// Finish & Result Generation
+function finishSession(isTimeOut) {
+    if (timerInterval) clearInterval(timerInterval);
+    document.getElementById("flashcard-screen").style.display = "none";
+    document.getElementById("mcq-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "flex";
+    document.getElementById("timer-display").style.display = "none";
+
+    const evalList = document.getElementById("eval-list");
+    evalList.innerHTML = "";
+    stats = { correct: 0, doubt: 0, wrong: 0 };
+
+    if (currentMode.startsWith('fc')) {
+        document.getElementById("label-stat-1").innerText = "Sudah Ingat";
+        document.getElementById("label-stat-2").innerText = "Ragu-ragu";
+        document.getElementById("label-stat-3").innerText = "Belum Ingat";
+
+        sessionCards.forEach((item, idx) => {
+            const ans = userAnswers[idx];
+            let statusClass = "wrong";
+            if (ans === 'remembered') { stats.correct++; statusClass = "correct"; }
+            else if (ans === 'doubtful') { stats.doubt++; }
+            else { stats.wrong++; }
+
+            const div = document.createElement("div");
+            div.className = `eval-item ${statusClass}`;
+            div.innerHTML = `
+                <div><span class="eval-kanji">${idx + 1}. ${item.kanji}</span> (${item.reading})</div>
+                <div><b>Arti:</b> ${item.meaning} &nbsp;|&nbsp; <small style="color:var(--text-sub);">${item.topic}</small></div>
+                <div style="font-size: 11px; font-weight:700; color: ${ans === 'remembered' ? 'var(--green)' : ans === 'doubtful' ? 'var(--yellow)' : 'var(--red)'};">
+                    Status: ${ans === 'remembered' ? '✅ Sudah Ingat' : ans === 'doubtful' ? '🤔 Ragu-ragu' : '❌ Belum Ingat'}
+                </div>
+            `;
+            evalList.appendChild(div);
+        });
+    } else {
+        document.getElementById("label-stat-1").innerText = "Jawaban Benar";
+        document.getElementById("label-stat-2").innerText = "Tidak Dijawab";
+        document.getElementById("label-stat-3").innerText = "Jawaban Salah";
+
+        sessionCards.forEach((item, idx) => {
+            const chosenIdx = userAnswers[idx];
+            const correctOptIdx = item.options.findIndex(o => o.id === item.id);
+            const isCorrect = (chosenIdx === correctOptIdx);
+
+            if (chosenIdx === null || chosenIdx === undefined) stats.doubt++;
+            else if (isCorrect) stats.correct++;
+            else stats.wrong++;
+
+            const div = document.createElement("div");
+            div.className = `eval-item ${isCorrect ? 'correct' : 'wrong'}`;
+            
+            let optsHtml = item.options.map((opt, i) => {
+                let badge = String.fromCharCode(65 + i);
+                let isThisCorrect = (i === correctOptIdx);
+                let isThisChosen = (i === chosenIdx);
+                let color = isThisCorrect ? "var(--green)" : (isThisChosen ? "var(--red)" : "var(--text-sub)");
+                return `<div style="color:${color}; font-weight:${isThisCorrect || isThisChosen ? '700':'400'}; font-size:12px;">
+                    ${badge}. ${opt.reading} (${opt.meaning}) ${isThisCorrect ? '✓ (Kunci)' : (isThisChosen ? '✗ (Jawabanmu)' : '')}
+                </div>`;
+            }).join("");
+
+            div.innerHTML = `
+                <div><span class="eval-kanji">${idx + 1}. ${item.kanji}</span> - Cara Baca: <b>${item.reading}</b> | Arti: <b>${item.meaning}</b></div>
+                <div style="margin-top: 6px; display:flex; flex-direction:column; gap:2px;">${optsHtml}</div>
+            `;
+            evalList.appendChild(div);
+        });
+    }
+
+    document.getElementById("count-correct").innerText = stats.correct;
+    document.getElementById("count-doubt").innerText = stats.doubt;
+    document.getElementById("count-wrong").innerText = stats.wrong;
+
+    if (isTimeOut) {
+        document.getElementById("result-summary").innerText = "⏳ Waktu habis! Sesi telah dihentikan secara otomatis. Berikut rekap lengkap jawabanmu:";
+    } else {
+        document.getElementById("result-summary").innerText = "Sesi selesai! Berikut rekapitulasi evaluasi jawaban kamu:";
+    }
+}
+
+// Add Desktop Keyboard Shortcuts
+document.addEventListener('keydown', (e) => {
+    // Only handle active sessions
+    if (document.getElementById("flashcard-screen").style.display === "flex") {
+        if (e.code === "Space") {
+            e.preventDefault();
+            flipCard();
+        } else if (isFlipped) {
+            if (e.key === "1") rateFlashcard('forgotten');
+            if (e.key === "2") rateFlashcard('doubtful');
+            if (e.key === "3") rateFlashcard('remembered');
+        }
+    } else if (document.getElementById("mcq-screen").style.display === "flex") {
+        const key = e.key.toLowerCase();
+        if (key === 'a') selectMCQOption(0);
+        if (key === 'b') selectMCQOption(1);
+        if (key === 'c') selectMCQOption(2);
+        if (key === 'd') selectMCQOption(3);
+        if (e.key === "ArrowLeft") prevMCQQuestion();
+        if (e.key === "ArrowRight") nextMCQQuestion();
+    }
+});
+</script>
+</body>
+</html>
